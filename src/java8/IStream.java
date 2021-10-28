@@ -35,9 +35,11 @@ public interface IStream<T> {
 
     <R> R collect(Supplier<R> supplier, BiConsumer<R, T> accumulator);
 
-    <R> R sorted(Supplier<R> supplier, BiConsumer<R, T> accumulator,Comparator c);
+    IStream<T> sorted(Comparator<T> cpt);
 
-    <R> R distinct(Supplier<R> supplier, BiConsumer<R, T> accumulator);
+
+    <R> IStream<R> distinct(Supplier<R> supplier, BiConsumer<R, T> accumulator);
+    // <R> R distinct(Supplier<R> supplier, BiConsumer<R, T> accumulator);
 
     //<R> R sorted(Comparator<T> c);
 
@@ -46,16 +48,16 @@ public interface IStream<T> {
 class TestIStream {
     public static void main(String[] args) {
         List<Integer> l = new ArrayList<>();
-        l.add(1);
-        l.add(2);
-        IStream<Integer> stream = IStream.of(l);
-        l.add(3);
         l.add(4);
-        List<String> ans = stream.map(x -> x * 2).filter(x -> x < 5).map(x -> String.valueOf(x)).collect(() -> new ArrayList(), (res, val) -> res.add(val));
+        l.add(3);
+        IStream<Integer> stream = IStream.of(l);
+        l.add(2);
+        l.add(1);
+        List<String> ans = stream.map(x -> x * 2).map(x -> String.valueOf(x)).sorted((v1, v2) -> v1.compareTo(v2)).collect(() -> new ArrayList(), (res, val) -> res.add(val));
         System.out.println(ans);
         List<String> ans2 = stream.map(x -> x * 2).map(x -> String.valueOf(x)).collect(() -> new ArrayList(), (res, val) -> res.add(val));
         System.out.println(ans2);
-        List<String> ans3 = stream.map(x -> x * 2).sorted(() -> new ArrayList(), (res, val) -> res.add(val), (x1,x2) -> x1-x2);
+    }
 }
 
 

@@ -1,13 +1,13 @@
 package java8;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class Operation<IN, OUT> extends AbstractPipeline<IN, OUT> {
-
 
     public Operation(Collection<OUT> source) {
         super(source);
@@ -42,13 +42,36 @@ public class Operation<IN, OUT> extends AbstractPipeline<IN, OUT> {
         return new Operation<OUT, OUT>(this) {
             @Override
             ISink<OUT> onWrapSink(ISink<OUT> downstreamSink) {
-                return val -> {
-                    if(predicate.test(val)) {
-                        downstreamSink.accept(val);
+//                return val -> {
+//                    if(predicate.test(val)) {
+//                        downstreamSink.accept(val);
+//                    }
+//                };
+                return new ISink.ChainedSink<>(downstreamSink) {
+                    @Override
+                    public void accept(OUT val) {
+                        if (predicate.test(val)){
+                            downstreamSink.accept(val);
+                        }
                     }
                 };
             }
         };
+    }
+
+    @Override
+    public IStream<OUT> sorted(Comparator<OUT> cpt) {
+        return new Operation<OUT, OUT>(this) {
+            @Override
+            ISink<OUT> onWrapSink(ISink<OUT> downstreamSink) {
+                return new SortedSink<OUT>(downstreamSink, cpt);
+            }
+        };
+    }
+
+    @Override
+    public <R> IStream<R> distinct(Supplier<R> supplier, BiConsumer<R, OUT> accumulator) {
+        return null;
     }
 
     @Override

@@ -33,6 +33,7 @@ public abstract class AbstractPipeline<IN, OUT> implements IStream<OUT> {
         R collectionResult = supplier.get();
         ISink head = wrapSink(val -> accumulator.accept(collectionResult, val));
         Iterator<OUT> itr = this.sourceIterator.get();
+        head.begin(-1);
         while(itr.hasNext()) {
             OUT val = itr.next();
             System.out.println(val);
@@ -42,41 +43,40 @@ public abstract class AbstractPipeline<IN, OUT> implements IStream<OUT> {
         return collectionResult;
     }
 
-    @Override
-    public <R> R sorted(Supplier<R> supplier, BiConsumer<R, OUT> accumulator, Comparator c) {
-        R sortingData = supplier.get();
-        ISink head = wrapSink(val -> accumulator.accept(sortingData, val));
-        Iterator<OUT> itr = this.sourceIterator.get();
-        ArrayList<R> list = new ArrayList<>();
-        while(itr.hasNext()) {
-            OUT val = itr.next();
-            list.add((R) val);
-        }
-        list.sort(c);
-        for (R r: list){
-            head.accept(r);
-        }
-        head.end();
-        return (R) list;
-    }
+//    public <R> R sorted(Supplier<R> supplier, BiConsumer<R, OUT> accumulator, Comparator c) {
+//        R sortingData = supplier.get();
+//        ISink head = wrapSink(val -> accumulator.accept(sortingData, val));
+//        Iterator<OUT> itr = this.sourceIterator.get();
+//        ArrayList<R> list = new ArrayList<>();
+//        while(itr.hasNext()) {
+//            OUT val = itr.next();
+//            list.add((R) val);
+//        }
+//        list.sort(c);
+//        for (R r: list){
+//            head.accept(r);
+//        }
+//        head.end();
+//        return (R) list;
+//    }
 
-    @Override
-    public <R> R distinct(Supplier<R> supplier, BiConsumer<R, OUT> accumulator) {
-        R distinctResult = supplier.get();
-        ISink head = wrapSink(val -> accumulator.accept(distinctResult, val));
-        Iterator<OUT> itr = this.sourceIterator.get();
-        ConcurrentHashMap<R,Integer> distinctMap = new ConcurrentHashMap<>();
-        while(itr.hasNext()) {
-            OUT val = itr.next();
-            if (distinctMap.containsKey(val)) continue;
-            else {
-                distinctMap.put((R) val,1);
-                head.accept(val);
-            }
-        }
-        head.end();
-        return (R) distinctMap.keys();
-    }
+//    @Override
+//    public <R> R distinct(Supplier<R> supplier, BiConsumer<R, OUT> accumulator) {
+//        R distinctResult = supplier.get();
+//        ISink head = wrapSink(val -> accumulator.accept(distinctResult, val));
+//        Iterator<OUT> itr = this.sourceIterator.get();
+//        ConcurrentHashMap<R,Integer> distinctMap = new ConcurrentHashMap<>();
+//        while(itr.hasNext()) {
+//            OUT val = itr.next();
+//            if (distinctMap.containsKey(val)) continue;
+//            else {
+//                distinctMap.put((R) val,1);
+//                head.accept(val);
+//            }
+//        }
+//        head.end();
+//        return (R) distinctMap.keys();
+//    }
 
     private ISink<?> wrapSink(ISink<OUT> sink) {
         for(AbstractPipeline p = this; p.level > 0; p = p.upstream) {
