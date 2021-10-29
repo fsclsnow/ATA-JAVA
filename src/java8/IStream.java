@@ -39,6 +39,8 @@ public interface IStream<T> {
 
     <R> IStream<R> distinct();
 
+    <R> R reduce(Supplier<R> supplier);
+
     // <R> R distinct(Supplier<R> supplier, BiConsumer<R, T> accumulator);
 
     //<R> R sorted(Comparator<T> c);

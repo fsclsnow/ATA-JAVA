@@ -81,6 +81,11 @@ public class Operation<IN, OUT> extends AbstractPipeline<IN, OUT> {
     }
 
     @Override
+    public <R> R reduce(Supplier<R> supplier) {
+        return null;
+    }
+
+    @Override
     ISink<IN> onWrapSink(ISink<OUT> sink) {
         throw new UnsupportedOperationException("need to be implemented");
     }

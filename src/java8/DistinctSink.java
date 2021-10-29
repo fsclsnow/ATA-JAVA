@@ -22,7 +22,6 @@ public class DistinctSink<T> implements ISink<T> {
     public void end() {
         this.downstream.begin((long)this.map.size());
         Iterator var1 = this.map.keySet().iterator();
-
         while(var1.hasNext()) {
             T t = (T) var1.next();
             this.downstream.accept(t);
