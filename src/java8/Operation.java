@@ -2,6 +2,7 @@ package java8;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -26,13 +27,23 @@ public class Operation<IN, OUT> extends AbstractPipeline<IN, OUT> {
 //                    R r = mapper.apply(val);
 //                    downstreamSink.accept(r);
 //                };
-                return new ISink<OUT>() {
+                return new ISink.ChainedSink<>(downstreamSink) {
                     @Override
                     public void accept(OUT val) {
                         R r = mapper.apply(val);
                         downstreamSink.accept(r);
                     }
                 };
+            }
+        };
+    }
+
+
+    public IStream<OUT> distinct(){
+        return new Operation<OUT, OUT>(this) {
+            @Override
+            ISink<OUT> onWrapSink(ISink<OUT> downstreamSink) {
+                return new DistinctSink<>(downstreamSink);
             }
         };
     }
@@ -67,11 +78,6 @@ public class Operation<IN, OUT> extends AbstractPipeline<IN, OUT> {
                 return new SortedSink<OUT>(downstreamSink, cpt);
             }
         };
-    }
-
-    @Override
-    public <R> IStream<R> distinct(Supplier<R> supplier, BiConsumer<R, OUT> accumulator) {
-        return null;
     }
 
     @Override

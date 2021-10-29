@@ -1,31 +1,27 @@
 package java8;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class DistinctSink<T> implements ISink<T> {
-    private LinkedHashMap<T, Integer> map;
+    private Map<T, Integer> map;
     private final ISink<T> downstream;
 
-    public <R, OUT> DistinctSink(ISink<T> downstream, Supplier<R> supplier, BiConsumer<R, OUT> accumulator) {
-        this.downstream = downstream;
-    }
-
-    public DistinctSink(ISink<T> downstreamSink, ISink<T> downstream) {
+    public DistinctSink(ISink<T> downstream) {
         this.downstream = downstream;
     }
 
     @Override
     public void begin(long size) {
-        map = new LinkedHashMap<T, Integer>();
+        map = new ConcurrentHashMap<>();
     }
 
     @Override
     public void end() {
         this.downstream.begin((long)this.map.size());
-        Iterator var1 = this.map.entrySet().iterator();
+        Iterator var1 = this.map.keySet().iterator();
 
         while(var1.hasNext()) {
             T t = (T) var1.next();
@@ -36,9 +32,7 @@ public class DistinctSink<T> implements ISink<T> {
     }
 
     @Override
-    public void accept(Object o) {
-        if (!this.map.containsKey((T)o))
-            this.map.put((T)o, 1);
+    public void accept(T t) {
+        map.putIfAbsent(t, 0);
     }
-
 }

@@ -17,28 +17,29 @@ public class SortedSink<T> implements ISink<T> {
 
     @Override
     public void begin(long size) {
-//        if (size >= 2147483639L) {
-//            throw new IllegalArgumentException("Stream size exceeds max array size");
-//        } else {
-//            this.list = size >= 0L ? new ArrayList((int)size) : new ArrayList();
-//        }
-        list = new ArrayList<>();
+        if (size >= 2147483639L) {
+            throw new IllegalArgumentException("Stream size exceeds max array size");
+        } else {
+            this.list = size >= 0L ? new ArrayList((int)size) : new ArrayList();
+        }
+//        list = new ArrayList<>();
     }
 
     @Override
     public void end() {
         this.list.sort(this.comparator);
-        downstream.begin(-1);
-        list.forEach(t -> downstream.accept(t));
-//        this.downstream.begin((long)this.list.size());
-//        Iterator var1 = this.list.iterator();
-//
-//        while(var1.hasNext()) {
-//            T t = (T) var1.next();
-//            this.downstream.accept(t);
-//        }
-        this.downstream.end();
-        //this.list = null;
+//        downstream.begin(-1);
+//        list.forEach(t -> downstream.accept(t));
+//        this.downstream.end();
+        this.downstream.begin((long)this.list.size());
+        Iterator var1 = this.list.iterator();
+
+        while(var1.hasNext()) {
+            T t = (T) var1.next();
+            this.downstream.accept(t);
+        }
+
+        this.list = null;
     }
 
     @Override
