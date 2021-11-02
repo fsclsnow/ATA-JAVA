@@ -1,8 +1,6 @@
 package AOP;
 
-import AOP.advice.After;
-import AOP.advice.Around;
-import AOP.advice.Before;
+import AOP.advice.*;
 
 import java.lang.reflect.Proxy;
 
@@ -106,6 +104,21 @@ class EmployeeAspect {
         Object res = mi.proceed();
         System.out.println("-- -- --- this is around2222 after -------");
         return res;
+    }
+
+    @AfterThrow
+    public void afterThrowFun(Throwable e) throws Throwable {
+        System.out.println("-- -- --- this is a exception -------" + e.getMessage());
+    }
+
+    @AfterReturn
+    public void afterReturnFun(Object returnVal) throws Throwable {
+        System.out.println(".....This is after return......");
+    }
+
+    @PointCut
+    public void pointCutFun(MethodInvocation mi) throws Throwable {
+        System.out.println(".....This is PointCut......");
     }
 }
 

@@ -1,13 +1,8 @@
 package AOP;
 
 
-import AOP.advice.After;
-import AOP.advice.Around;
-import AOP.advice.Before;
-import AOP.interceptor.AfterMethodInterceptor;
-import AOP.interceptor.AroundMethodInterceptor;
-import AOP.interceptor.BeforeMethodInterceptor;
-import AOP.interceptor.MethodInterceptor;
+import AOP.advice.*;
+import AOP.interceptor.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -38,6 +33,12 @@ public class JdkAOPInvocationHandler implements InvocationHandler {
                     methodInterceptor = new AfterMethodInterceptor(aspectObj, aspectMethod);
                 } else if(ano.annotationType() == Around.class) {
                     methodInterceptor = new AroundMethodInterceptor(aspectObj, aspectMethod);
+                } else if (ano.annotationType() == PointCut.class) {
+                    methodInterceptor = new PointCutMethodInterceptor(aspectObj, aspectMethod);
+                } else if (ano.annotationType() == AfterReturn.class) {
+                    methodInterceptor = new AfterReturnMethodInterceptor(aspectObj, aspectMethod);
+                } else if (ano.annotationType() == AfterThrow.class) {
+                    methodInterceptor = new AfterThrowMethodInterceptor(aspectObj, aspectMethod);
                 }
                 interceptors.add(methodInterceptor);
             }
