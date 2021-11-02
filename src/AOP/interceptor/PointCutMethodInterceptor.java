@@ -16,9 +16,9 @@ public class PointCutMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation mi) throws Throwable {
+        Object result = mi.proceed();
         aspectMethod.setAccessible(true);
-        Object obj = mi.proceed();
-        aspectMethod.invoke(aspectObj);
-        return obj;
+        aspectMethod.invoke(aspectObj, mi);
+        return result;
     }
 }

@@ -18,7 +18,7 @@ public class AfterReturnMethodInterceptor implements MethodInterceptor {
     public Object invoke(MethodInvocation mi) throws Throwable {
         Object result = mi.proceed();
         aspectMethod.setAccessible(true);
-        aspectMethod.invoke(aspectObj);
+        aspectMethod.invoke(aspectObj,mi);
         return result;
     }
 }
