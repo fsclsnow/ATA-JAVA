@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JdkAOPInvocationHandler implements InvocationHandler {
 
@@ -45,5 +46,14 @@ public class JdkAOPInvocationHandler implements InvocationHandler {
         }
         MethodInvocation mi = new ProxyMethodInvocation(interceptors, originObj, method, args);
         return mi.proceed();
+    }
+}
+
+class AdviseSupport {
+    private List<MethodInterceptor> interceptors;
+    private Map<Class<?>, List<MethodInterceptor>> map;
+
+    public AdviseSupport(Map<Class<?>, List<MethodInterceptor>> map) {
+        this.map = map;
     }
 }

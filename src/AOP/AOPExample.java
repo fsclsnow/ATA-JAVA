@@ -56,8 +56,10 @@ interface EmployeeService {
 }
 
 class EmployeeServiceImpl1 implements EmployeeService {
+    private Object NullPointerException;
+
     @Override
-    public int get() {
+    public int get(){
         System.out.println("this is get()");
         return 5;
     }
@@ -99,6 +101,7 @@ class EmployeeAspect {
     }
 
     @Around
+//    @PointCut({EmployeeServiceImpl1.class})
     public Object around2Fun(MethodInvocation mi) throws Throwable {
         System.out.println("-- -- --- this is around2222 before -------");
         Object res = mi.proceed();
@@ -107,18 +110,26 @@ class EmployeeAspect {
     }
 
     @AfterThrow
-    public void afterThrowFun(Throwable e) throws Throwable {
-        System.out.println("-- -- --- this is a exception -------" + e.getMessage());
+    public Object afterThrowFun(MethodInvocation mi) throws Throwable {
+        try {
+            Object res = mi.proceed();
+            return res;
+        } catch (Throwable t) {
+            System.out.println("-- -- --- this is a exception -------" + t.getMessage());
+        }
+        return null;
     }
 
     @AfterReturn
-    public void afterReturnFun(Object returnVal) throws Throwable {
-        System.out.println(".....This is after return......");
-    }
-
-    @PointCut
-    public void pointCutFun(MethodInvocation mi) throws Throwable {
-        System.out.println(".....This is PointCut......");
+    public Object afterReturnFun(MethodInvocation mi) throws Throwable {
+        try {
+            Object resVal = mi.proceed();
+            System.out.println(".....This is after return...... : " + resVal);
+            return resVal;
+        }catch (Throwable t){
+            t.printStackTrace();
+        }
+        return null;
     }
 }
 
