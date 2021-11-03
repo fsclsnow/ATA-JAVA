@@ -47,6 +47,11 @@ public class JdkAOPInvocationHandler implements InvocationHandler {
         MethodInvocation mi = new ProxyMethodInvocation(interceptors, originObj, method, args);
         return mi.proceed();
     }
+
+    private void findPointCut(){
+
+    }
+
 }
 
 class AdviseSupport {
